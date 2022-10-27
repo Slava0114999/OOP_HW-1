@@ -1,5 +1,6 @@
 import json
 
+
 class Toyota:
     file = "Toyotas.json"
 
@@ -28,32 +29,25 @@ class Toyota:
             print(toyota["color"])
 
     @classmethod
-    def get_by_id(cls, id):
-        toyotas = cls.get_data()
+    def get_by_id(cls, id):  # return True if ID to be, and return False if ID ERROR
+        toyotas = cls.get_data()  # list with dict
         counter = 0
         for toyota in toyotas:
             if id == toyota["id"]:
+                print("Your Toyota is №", end="")
                 print(toyota["id"], end=" ")
                 print(toyota["name"], end=" - ")
                 print(toyota["engine"], end=" - ")
-                print(toyota["color"])
-                break
+                print(toyota["color"], "\n")
+                return True
             counter += 1
             if counter == len(toyotas):
-                print("Not found Toyota with this id!")
-
-    def toyota_to_driv(cls, id):
-        toyotas = cls.get_data()
-        for toyota in toyotas:
-            if id == toyota["id"]:
-                name = (toyota["name"])
-                engine = (toyota["engine"])
-                color = (toyota["color"])
-                print(name, engine,color)
+                print("Not found Toyota with this id!\n")
+                return False
 
     def save(self):
         data = self.get_data()
-        new_Toyota = {"name": self.name, "engine": self.engine, "color": self.color}
+        new_Toyota = {"name": self.name, "engine": self.engine, "color": self.color} #dict
         if len(data) > 0:
             new_Toyota["id"] = data[-1]['id'] + 1
         else:
@@ -63,13 +57,32 @@ class Toyota:
         data_in_json = json.dumps(data)
         file.write(data_in_json)
 
+    @classmethod
+    def remove_by_id(self, id):
+        data = self.get_data()
+        data.pop(id-1) # i = id-1
+        file = open("database/" + self.file, "w")
+        data_in_json = json.dumps(data)
+        file.write(data_in_json)
+
     # Drive Shift gear Change color
-
+    @staticmethod
     def drive():
-        print("Drive!")
+        print("Drive!\n")
 
+    @staticmethod
     def shift_gear():
-        print("Gear is shifted!")
+        print("Change gear!\n")
 
-    def change_color(color):
-        print(f"New color is {color}!\n")
+    @classmethod
+    def change_color_by_id_s(cls, id, new_color):
+        toyotas = cls.get_data()  # list with dict
+        for toyota in toyotas:
+            if id == toyota["id"]:
+                toyota["color"] = new_color
+                toyotas[id - 1]["name"] = toyota["name"]
+                toyotas[id - 1]["engine"] = toyota["engine"]
+                toyotas[id - 1]["color"] = toyota["color"]
+        file = open("database/" + cls.file, "w")
+        data_in_json = json.dumps(toyotas)
+        file.write(data_in_json)
